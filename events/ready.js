@@ -69,8 +69,8 @@ export async function execute(client) {
                     logChannel.send({
                         embeds: [
                             createLogEmbed({
-                                title: "❌ Sprachkanal entfernt",
-                                text: `Sprachkanal mit ID \`${guildChannel.id}\` wurde entfernt.`,
+                                title: "❌ Voice channel removed",
+                                text: `Voice channel with ID \`${guildChannel.id}\` was removed.`,
                                 color: "#FF0000",
                             }),
                         ],
