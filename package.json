@@ -1,6 +1,6 @@
 {
 	"name": "discord-auto-channel",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"main": "bot.js",
 	"type": "module",
 	"scripts": {
