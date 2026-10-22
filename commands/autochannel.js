@@ -90,7 +90,7 @@ export const data = new SlashCommandBuilder()
                 o.setName("name").setDescription("Konfiguration").setRequired(true).setAutocomplete(true)
             )
     )
-    .addSubcommand((sub) => sub.setName("list").setDescription("Alle Auto-Channel-Konfigurationen anzeigen"));
+    .addSubcommand((sub) => sub.setName("list").setDescription("Show all Auto-Channel configurations"));
 
 const reply = (interaction, content) =>
     interaction.reply({ content, flags: MessageFlags.Ephemeral });
@@ -117,13 +117,13 @@ const handleAdd = async (interaction) => {
     const guildId = interaction.guildId;
 
     if (await getConfigByName(guildId, name)) {
-        return reply(interaction, `❌ Es gibt bereits eine Konfiguration mit dem Namen **${name}**.`);
+        return reply(interaction, `❌ There is already a configuration with the name **${name}**.`);
     }
 
     const existingTrigger = await getConfigByTrigger(trigger.id);
 
     if (existingTrigger) {
-        return reply(interaction, `❌ <#${trigger.id}> ist bereits Trigger der Konfiguration **${existingTrigger.name}**.`);
+        return reply(interaction, `❌ <#${trigger.id}> is already a trigger for the configuration **${existingTrigger.name}**.`);
     }
 
     const cfg = await createConfig({
@@ -134,16 +134,16 @@ const handleAdd = async (interaction) => {
         nameConvention: pattern,
     });
 
-    logConsole(`✅ Auto-Channel-Konfiguration "${cfg.name}" angelegt von ${interaction.user.tag}`);
+    logConsole(`✅ Auto-Channel-Configuration "${cfg.name}" created by ${interaction.user.tag}`);
 
     await sendLog(
         interaction,
-        "⚙️ Auto-Channel-Konfiguration angelegt",
-        `**${cfg.name}** von <@${interaction.user.id}>\n${describeConfig(cfg)}`,
+        "⚙️ Auto-Channel-Configuration created",
+        `**${cfg.name}** by <@${interaction.user.id}>\n${describeConfig(cfg)}`,
         "#26FF00"
     );
 
-    return reply(interaction, `✅ Konfiguration **${cfg.name}** angelegt.\n${describeConfig(cfg)}`);
+    return reply(interaction, `✅ Configuration **${cfg.name}** created.\n${describeConfig(cfg)}`);
 };
 
 const handleEdit = async (interaction) => {
@@ -157,17 +157,17 @@ const handleEdit = async (interaction) => {
 
     const cfg = await getConfigByName(guildId, name);
 
-    if (!cfg) return reply(interaction, `❌ Keine Konfiguration mit dem Namen **${name}** gefunden.`);
+    if (!cfg) return reply(interaction, `❌ No configuration with the name **${name}** found.`);
 
     if (category && resetCategory) {
-        return reply(interaction, "❌ `category` und `reset_category` können nicht gleichzeitig gesetzt werden.");
+        return reply(interaction, "❌ `category` and `reset_category` cannot be set simultaneously.");
     }
 
     const changes = {};
 
     if (newName && newName !== cfg.name) {
         if (await getConfigByName(guildId, newName)) {
-            return reply(interaction, `❌ Es gibt bereits eine Konfiguration mit dem Namen **${newName}**.`);
+            return reply(interaction, `❌ There is already a configuration with the name **${newName}**.`);
         }
         changes.name = newName;
     }
@@ -175,7 +175,7 @@ const handleEdit = async (interaction) => {
     if (trigger && trigger.id !== cfg.triggerChannelId) {
         const other = await getConfigByTrigger(trigger.id);
         if (other) {
-            return reply(interaction, `❌ <#${trigger.id}> ist bereits Trigger der Konfiguration **${other.name}**.`);
+            return reply(interaction, `❌ <#${trigger.id}> is already a trigger for the configuration **${other.name}**.`);
         }
         changes.triggerChannelId = trigger.id;
     }
@@ -185,43 +185,43 @@ const handleEdit = async (interaction) => {
     if (resetCategory) changes.parentChannelId = null;
 
     if (Object.keys(changes).length === 0) {
-        return reply(interaction, "ℹ️ Keine Änderungen angegeben.");
+        return reply(interaction, "ℹ️ No changes specified.");
     }
 
     const updated = await updateConfig(cfg.id, changes);
 
-    logConsole(`✅ Auto-Channel-Konfiguration "${cfg.name}" bearbeitet von ${interaction.user.tag}`);
+    logConsole(`✅ Auto-Channel-Configuration "${cfg.name}" edited by ${interaction.user.tag}`);
 
     await sendLog(
         interaction,
-        "⚙️ Auto-Channel-Konfiguration bearbeitet",
-        `**${updated.name}** von <@${interaction.user.id}>\n${describeConfig(updated)}`,
+        "⚙️ Auto-Channel-Configuration edited",
+        `**${updated.name}** by <@${interaction.user.id}>\n${describeConfig(updated)}`,
         "#FFA500"
     );
 
-    return reply(interaction, `✅ Konfiguration **${updated.name}** aktualisiert.\n${describeConfig(updated)}`);
+    return reply(interaction, `✅ Configuration **${updated.name}** updated.\n${describeConfig(updated)}`);
 };
 
 const handleRemove = async (interaction) => {
     const name = interaction.options.getString("name", true);
     const cfg = await getConfigByName(interaction.guildId, name);
 
-    if (!cfg) return reply(interaction, `❌ Keine Konfiguration mit dem Namen **${name}** gefunden.`);
+    if (!cfg) return reply(interaction, `❌ No configuration with the name **${name}** found.`);
 
     await deleteConfig(cfg.id);
 
-    logConsole(`✅ Auto-Channel-Konfiguration "${cfg.name}" gelöscht von ${interaction.user.tag}`);
+    logConsole(`✅ Auto-Channel-Configuration "${cfg.name}" deleted by ${interaction.user.tag}`);
 
     await sendLog(
         interaction,
-        "⚙️ Auto-Channel-Konfiguration gelöscht",
-        `**${cfg.name}** von <@${interaction.user.id}>\n${describeConfig(cfg)}`,
+        "⚙️ Auto-Channel-Configuration deleted",
+        `**${cfg.name}** by <@${interaction.user.id}>\n${describeConfig(cfg)}`,
         "#FF0000"
     );
 
     return reply(
         interaction,
-        `🗑️ Konfiguration **${cfg.name}** gelöscht. Bereits erstellte Kanäle bleiben bestehen, bis sie leer sind.`
+        `🗑️ Configuration **${cfg.name}** deleted. Already created channels will remain until they are empty.`
     );
 };
 
@@ -229,15 +229,15 @@ const handleList = async (interaction) => {
     const configs = await listConfigs(interaction.guildId);
 
     if (configs.length === 0) {
-        return reply(interaction, "ℹ️ Noch keine Auto-Channel-Konfigurationen. Lege eine mit `/autochannel add` an.");
+        return reply(interaction, "ℹ️ No auto-channel configurations found. Create one with `/autochannel add`.");
     }
 
     const embed = new EmbedBuilder()
-        .setTitle("Auto-Channel-Konfigurationen")
+        .setTitle("Auto-Channel-Configurations")
         .setColor("#5865F2")
         .addFields(configs.slice(0, 25).map((cfg) => ({ name: cfg.name, value: describeConfig(cfg) })));
 
-    if (configs.length > 25) embed.setFooter({ text: `… und ${configs.length - 25} weitere` });
+    if (configs.length > 25) embed.setFooter({ text: `… and ${configs.length - 25} more` });
 
     return interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
 };

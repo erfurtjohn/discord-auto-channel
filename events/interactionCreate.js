@@ -22,7 +22,7 @@ export async function execute(interaction) {
 
         if (interaction.isAutocomplete()) return;
 
-        const payload = { content: "❌ Beim Ausführen des Befehls ist ein Fehler aufgetreten.", flags: MessageFlags.Ephemeral };
+        const payload = { content: "❌ An error occurred while executing the command.", flags: MessageFlags.Ephemeral };
 
         if (interaction.replied || interaction.deferred) {
             await interaction.followUp(payload).catch(() => { });

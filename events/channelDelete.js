@@ -7,6 +7,6 @@ export async function execute(channel) {
     const { count } = await deleteConfigByTrigger(channel.id);
 
     if (count > 0) {
-        logConsole(`🗑️ Trigger-Kanal ${channel.id} wurde gelöscht – zugehörige Auto-Channel-Konfiguration entfernt.`);
+        logConsole(`🗑️ Trigger channel ${channel.id} was deleted – associated auto-channel configuration removed.`);
     }
 }
