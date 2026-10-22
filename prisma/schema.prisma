@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model AutoChannel {
+  id                   Int      @id @default(autoincrement())
+  channelId            String   @unique
+  CreatedByGuildMember String
+  currentUsers         Int
+  created_at           DateTime @default(now())
+  updated_at           DateTime @default(now()) @updatedAt
+}
+
+model AutoChannelConfig {
+  id               Int      @id @default(autoincrement())
+  guildId          String
+  name             String
+  triggerChannelId String   @unique
+  parentChannelId  String?
+  nameConvention   String
+  created_at       DateTime @default(now())
+  updated_at       DateTime @default(now()) @updatedAt
+
+  @@unique([guildId, name])
+}
